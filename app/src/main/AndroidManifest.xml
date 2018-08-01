@@ -2,9 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.duniganatlee.bakerstreet221b">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +18,24 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".recipescreen.RecipeListActivity"
+            android:label="@string/title_recipe_list"
+            android:parentActivityName=".mainscreen.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.duniganatlee.bakerstreet221b.mainscreen.MainActivity" />
+        </activity>
+        <activity
+            android:name=".recipescreen.RecipeDetailActivity"
+            android:label="@string/title_recipe_detail"
+            android:parentActivityName=".recipescreen.RecipeListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.duniganatlee.bakerstreet221b.recipescreen.RecipeListActivity" />
         </activity>
     </application>
 

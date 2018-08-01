@@ -12,6 +12,7 @@ import com.example.duniganatlee.bakerstreet221b.R;
 import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 
 public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.RecipeCardViewHolder> {
+    // TODO: Make itemCount dynamic.
     private static int itemCount = 4;
     private OnClickHandler recipeCardClickHandler;
     private String[] recipeTitles = new String[itemCount];

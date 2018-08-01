@@ -1,5 +1,6 @@
 package com.example.duniganatlee.bakerstreet221b.mainscreen;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.duniganatlee.bakerstreet221b.R;
 import com.example.duniganatlee.bakerstreet221b.model.Recipe;
+import com.example.duniganatlee.bakerstreet221b.recipescreen.RecipeListActivity;
 import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
 import com.example.duniganatlee.bakerstreet221b.utils.NetworkUtils;
 
@@ -20,10 +22,11 @@ public class MainActivity extends AppCompatActivity
         implements RecipeCardAdapter.OnClickHandler {
     private String mRecipeListJson = null;
     public Recipe[] mRecipes = new Recipe[0];
-    // private Toast noNetworkToast = Toast.makeText(this, "No network", Toast.LENGTH_SHORT);
-    // private Toast noRecipesToast = Toast.makeText(this, "Cannot get recipes", Toast.LENGTH_SHORT);
     private RecyclerView.LayoutManager cardLayoutManager;
     private RecipeCardAdapter mRecipeCardAdapter;
+    public static final String RECIPE_POSITION_EXTRA = "recipe_id_extra";
+    public static final String RECIPE_JSON_EXTRA = "recipe_json_extra";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,15 +52,18 @@ public class MainActivity extends AppCompatActivity
             RecipeQueryTask queryTask = new RecipeQueryTask();
             queryTask.execute(recipeUrl);
         } else {
-            //noNetworkToast.show();
+
             Toast.makeText(this, "No network connection", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onItemClicked(int position) {
-        Toast.makeText(this,Integer.toString(position),Toast.LENGTH_SHORT).show();
-        Log.d("Position clicked",Integer.toString(position));
+        Intent launchRecipeListIntent = new Intent(this, RecipeListActivity.class);
+        launchRecipeListIntent.putExtra(RECIPE_JSON_EXTRA, mRecipeListJson);
+        launchRecipeListIntent.putExtra(RECIPE_POSITION_EXTRA, position);
+        startActivity(launchRecipeListIntent);
+
     }
 
     public class RecipeQueryTask extends AsyncTask<URL, Void, String> {
@@ -85,7 +91,7 @@ public class MainActivity extends AppCompatActivity
             mRecipes = JsonUtils.parseRecipeList(mRecipeListJson);
             mRecipeCardAdapter.setRecipeTitles(mRecipes);
         } else {
-            //noRecipesToast.show();
+
             Toast.makeText(this, "Could not load recipes", Toast.LENGTH_SHORT).show();
         }
     }
