@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.duniganatlee.bakerstreet221b.R;
 import com.example.duniganatlee.bakerstreet221b.model.Recipe;
+import com.example.duniganatlee.bakerstreet221b.model.Step;
 import com.example.duniganatlee.bakerstreet221b.recipescreen.dummy.DummyContent;
 
 /**
@@ -19,7 +20,8 @@ import com.example.duniganatlee.bakerstreet221b.recipescreen.dummy.DummyContent;
  * in two-pane mode (on tablets) or a {@link RecipeDetailActivity}
  * on handsets.
  */
-public class RecipeDetailFragment extends Fragment {
+public class RecipeStepDetailFragment extends Fragment {
+
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -30,12 +32,13 @@ public class RecipeDetailFragment extends Fragment {
      * The recipe this fragment is presenting.
      */
     private DummyContent.DummyItem mItem;
+    private Step mRecipeStep;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public RecipeDetailFragment() {
+    public RecipeStepDetailFragment() {
     }
 
     @Override
@@ -43,7 +46,7 @@ public class RecipeDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the Recipe specified by the fragment arguments.
+            // Load the Recipe Step specified by the fragment arguments.
             mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
@@ -66,4 +69,5 @@ public class RecipeDetailFragment extends Fragment {
 
         return rootView;
     }
+
 }

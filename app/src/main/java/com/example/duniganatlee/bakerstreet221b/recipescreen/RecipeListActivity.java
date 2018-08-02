@@ -21,10 +21,8 @@ import android.widget.Toast;
 import com.example.duniganatlee.bakerstreet221b.R;
 
 import com.example.duniganatlee.bakerstreet221b.mainscreen.MainActivity;
-import com.example.duniganatlee.bakerstreet221b.model.Ingredient;
 import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
-import com.example.duniganatlee.bakerstreet221b.recipescreen.dummy.DummyContent;
 import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
 
 import java.util.List;
@@ -125,11 +123,11 @@ public class RecipeListActivity extends AppCompatActivity {
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Step step = (Step) view.getTag();
+                Step recipeStep = (Step) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putInt(RecipeDetailFragment.ARG_ITEM_ID, step.getId());
-                    RecipeDetailFragment fragment = new RecipeDetailFragment();
+                    arguments.putInt(RecipeStepDetailFragment.ARG_ITEM_ID, recipeStep.getId());
+                    RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.recipe_detail_container, fragment)
@@ -137,7 +135,7 @@ public class RecipeListActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, RecipeDetailActivity.class);
-                    intent.putExtra(RecipeDetailFragment.ARG_ITEM_ID, step.getId());
+                    intent.putExtra(RecipeStepDetailFragment.ARG_ITEM_ID, recipeStep.getId());
                     context.startActivity(intent);
                 }
             }
