@@ -1,18 +1,12 @@
 package com.example.duniganatlee.bakerstreet221b.recipescreen;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
@@ -20,12 +14,9 @@ import android.widget.Toast;
 
 import com.example.duniganatlee.bakerstreet221b.R;
 
-import com.example.duniganatlee.bakerstreet221b.mainscreen.MainActivity;
 import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
 import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
-
-import java.util.List;
 
 /**
  * An activity representing a list of Recipes. This activity
@@ -35,10 +26,10 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class RecipeListActivity extends AppCompatActivity {
+// TODO: Add ingredients to the UI.
+public class RecipeListActivity extends AppCompatActivity implements RecipeStepMasterListFragment.OnStepClickListener {
     private String mRecipeListJson;
     private int mRecipePosition;
-    private final static int RECIPE_POSITION_DEFAULT = -1;
     private Recipe[] mRecipes = new Recipe[0];
     private Recipe mRecipe;
 
@@ -52,28 +43,38 @@ public class RecipeListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
-        Intent intent = getIntent();
-        mRecipeListJson = intent.getStringExtra(MainActivity.RECIPE_JSON_EXTRA);
-        mRecipePosition = intent.getIntExtra(MainActivity.RECIPE_POSITION_EXTRA, RECIPE_POSITION_DEFAULT);
-        if (mRecipeListJson != null) {
+        if (savedInstanceState == null) {
+            // If there is no previously saved state, get intent extras to parse the desired recipe,
+            // and create a master list fragment.
+            Intent intent = getIntent();
+            mRecipeListJson = intent.getStringExtra(JsonUtils.RECIPE_JSON_EXTRA);
+            mRecipePosition = intent.getIntExtra(JsonUtils.RECIPE_POSITION_EXTRA, JsonUtils.POSITION_DEFAULT);
+            if (mRecipeListJson == null) {
+                Toast.makeText(this, "Could not load recipe.", Toast.LENGTH_LONG);
+                finish();
+            }
+            // Parse recipe json.
             mRecipes = JsonUtils.parseRecipeList(mRecipeListJson);
             mRecipe = mRecipes[mRecipePosition];
-        } else {
-            Toast.makeText(this,"Could not load recipe.",Toast.LENGTH_LONG);
-            finish();
+
+            // Create fragment.
+            RecipeStepMasterListFragment masterFragment = new RecipeStepMasterListFragment();
+            masterFragment.setRecipe(mRecipe);
+
+            // Add the fragment to its container using a FragmentManager and a Transaction
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            fragmentManager.beginTransaction()
+                    .add(R.id.recipe_steps_container, masterFragment)
+                    .commit();
+
+
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -88,9 +89,11 @@ public class RecipeListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
+        /*
         View recyclerView = findViewById(R.id.recipe_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
+        */
     }
 
     @Override
@@ -111,74 +114,20 @@ public class RecipeListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, mRecipe.getSteps(), mTwoPane));
+        recyclerView.setAdapter(new RecipeStepRecyclerViewAdapter(mRecipe, this));
     }
 
-    public static class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    @Override
+    public void onStepSelected(Step recipeStep) {
+        if (mTwoPane) {
 
-        private final RecipeListActivity mParentActivity;
-        private final List<Step> mValues;
-        private final boolean mTwoPane;
-        private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Step recipeStep = (Step) view.getTag();
-                if (mTwoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putInt(RecipeStepDetailFragment.ARG_ITEM_ID, recipeStep.getId());
-                    RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
-                    fragment.setArguments(arguments);
-                    mParentActivity.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.recipe_detail_container, fragment)
-                            .commit();
-                } else {
-                    Context context = view.getContext();
-                    Intent intent = new Intent(context, RecipeDetailActivity.class);
-                    intent.putExtra(RecipeStepDetailFragment.ARG_ITEM_ID, recipeStep.getId());
-                    context.startActivity(intent);
-                }
-            }
-        };
-
-        SimpleItemRecyclerViewAdapter(RecipeListActivity parent,
-                                      List<Step> steps,
-                                      boolean twoPane) {
-            mValues = steps;
-            mParentActivity = parent;
-            mTwoPane = twoPane;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recipe_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(Integer.toString(mValues.get(position).getId()));
-            holder.mContentView.setText(mValues.get(position).getShortDescription());
-
-            holder.itemView.setTag(mValues.get(position));
-            holder.itemView.setOnClickListener(mOnClickListener);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.size();
-        }
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            final TextView mIdView;
-            final TextView mContentView;
-
-            ViewHolder(View view) {
-                super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
+        } else {
+            Intent intent = new Intent(this, RecipeDetailActivity.class);
+            intent.putExtra(JsonUtils.RECIPE_JSON_EXTRA,mRecipeListJson);
+            intent.putExtra(JsonUtils.RECIPE_POSITION_EXTRA, mRecipePosition);
+            intent.putExtra(JsonUtils.STEP_POSITION_EXTRA,recipeStep.getId());
+            startActivity(intent);
         }
     }
+
 }

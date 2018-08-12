@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.duniganatlee.bakerstreet221b.R;
+import com.example.duniganatlee.bakerstreet221b.model.Recipe;
+import com.example.duniganatlee.bakerstreet221b.model.Step;
 import com.example.duniganatlee.bakerstreet221b.recipescreen.dummy.DummyContent.DummyItem;
 
 import java.util.List;
@@ -15,28 +18,28 @@ import java.util.List;
  * specified {@link RecipeStepMasterListFragment.OnStepClickListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyStepRecyclerViewAdapter extends RecyclerView.Adapter<MyStepRecyclerViewAdapter.ViewHolder> {
+public class RecipeStepRecyclerViewAdapter extends RecyclerView.Adapter<RecipeStepRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<Step> mRecipeSteps;
     private final RecipeStepMasterListFragment.OnStepClickListener mListener;
 
-    public MyStepRecyclerViewAdapter(List<DummyItem> items, RecipeStepMasterListFragment.OnStepClickListener listener) {
-        mValues = items;
+    public RecipeStepRecyclerViewAdapter(Recipe recipe, RecipeStepMasterListFragment.OnStepClickListener listener) {
+        mRecipeSteps = recipe.getSteps();
         mListener = listener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_step, parent, false);
+                .inflate(R.layout.recipe_step, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mStep = mRecipeSteps.get(position);
+        holder.mIdView.setText(Integer.toString(mRecipeSteps.get(position).getId()));
+        holder.mContentView.setText(mRecipeSteps.get(position).getShortDescription());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,7 +47,7 @@ public class MyStepRecyclerViewAdapter extends RecyclerView.Adapter<MyStepRecycl
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onStepSelected(holder.mItem);
+                    mListener.onStepSelected(holder.mStep);
                 }
             }
         });
@@ -52,19 +55,19 @@ public class MyStepRecyclerViewAdapter extends RecyclerView.Adapter<MyStepRecycl
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mRecipeSteps.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public Step mStep;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
+            mIdView = (TextView) view.findViewById(R.id.step_number);
             mContentView = (TextView) view.findViewById(R.id.content);
         }
 

@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity
     public Recipe[] mRecipes = new Recipe[0];
     private RecyclerView.LayoutManager cardLayoutManager;
     private RecipeCardAdapter mRecipeCardAdapter;
-    public static final String RECIPE_POSITION_EXTRA = "recipe_id_extra";
-    public static final String RECIPE_JSON_EXTRA = "recipe_json_extra";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +58,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onItemClicked(int position) {
         Intent launchRecipeListIntent = new Intent(this, RecipeListActivity.class);
-        launchRecipeListIntent.putExtra(RECIPE_JSON_EXTRA, mRecipeListJson);
-        launchRecipeListIntent.putExtra(RECIPE_POSITION_EXTRA, position);
+        launchRecipeListIntent.putExtra(JsonUtils.RECIPE_JSON_EXTRA, mRecipeListJson);
+        launchRecipeListIntent.putExtra(JsonUtils.RECIPE_POSITION_EXTRA, position);
         startActivity(launchRecipeListIntent);
 
     }

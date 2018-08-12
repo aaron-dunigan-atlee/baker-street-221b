@@ -1,7 +1,7 @@
 package com.example.duniganatlee.bakerstreet221b.recipescreen;
 
-import android.app.Activity;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,9 +10,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.duniganatlee.bakerstreet221b.R;
-import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
-import com.example.duniganatlee.bakerstreet221b.recipescreen.dummy.DummyContent;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * A fragment representing a single Recipe detail screen.
@@ -21,18 +34,28 @@ import com.example.duniganatlee.bakerstreet221b.recipescreen.dummy.DummyContent;
  * on handsets.
  */
 public class RecipeStepDetailFragment extends Fragment {
+    // Layout view variables to be bound using ButterKnife.
+    @BindView(R.id.player_view) SimpleExoPlayerView mExoPlayerView;
+    @BindView(R.id.text_description) TextView descriptionTextView;
 
+    private SimpleExoPlayer mExoPlayer;
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_ITEM_ID = "short_description";
 
+    // TODO: replace these hard values with passed arguments
     /**
      * The recipe this fragment is presenting.
      */
-    private DummyContent.DummyItem mItem;
     private Step mRecipeStep;
+    private int id;
+    private String mShortDescription;
+    private String mDescription;
+    private String mVideoURL;
+    private String mThumbnailURL;
+    private String mRecipeName;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -44,30 +67,62 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the Recipe Step specified by the fragment arguments.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
-            }
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.recipe_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
+        ButterKnife.bind(this,rootView);
+        // Populate the UI.
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.recipe_detail)).setText(mItem.details);
-        }
-
+        // TODO: Include all the recipe step details.
+        mDescription = mRecipeStep.getDescription();
+        descriptionTextView.setText(mDescription);
+        // Initialize the media player.
+        mVideoURL = mRecipeStep.getVideoURL();
+        initializePlayer(Uri.parse(mVideoURL));
         return rootView;
     }
 
+    public void initializePlayer(Uri mediaUri) {
+        // TODO: Figure out how to stream the video from the http resource.
+        Context context = getContext();
+        if (mExoPlayer == null) {
+            TrackSelector trackSelector = new DefaultTrackSelector();
+            LoadControl loadControl = new DefaultLoadControl();
+            mExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector,loadControl);
+            mExoPlayerView.setPlayer(mExoPlayer);
+            //Prepare media source.
+            String userAgent = Util.getUserAgent(context, "BakerStreet221B");
+            MediaSource mediaSource = new ExtractorMediaSource(
+                    mediaUri,
+                    new DefaultDataSourceFactory(context, userAgent),
+                    new DefaultExtractorsFactory(),
+                    null,
+                    null);
+            mExoPlayer.prepare(mediaSource);
+            mExoPlayer.setPlayWhenReady(true);
+        }
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        releasePlayer();
+    }
+
+    // Release ExoPlayer
+    private void releasePlayer() {
+        mExoPlayer.stop();
+        mExoPlayer.release();
+        mExoPlayer = null;
+    }
+
+    public void setRecipeStep(Step recipeStep) {
+        mRecipeStep = recipeStep;
+    }
+
+    public void setRecipeName(String recipeName) {
+        mRecipeName = recipeName;
+    }
 }

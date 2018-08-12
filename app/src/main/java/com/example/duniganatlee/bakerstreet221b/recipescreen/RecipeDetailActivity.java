@@ -2,15 +2,21 @@ package com.example.duniganatlee.bakerstreet221b.recipescreen;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.example.duniganatlee.bakerstreet221b.R;
+import com.example.duniganatlee.bakerstreet221b.model.Recipe;
+import com.example.duniganatlee.bakerstreet221b.model.Step;
+import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+
+import java.util.List;
+
+import butterknife.BindView;
 
 /**
  * An activity representing a single Recipe detail screen. This
@@ -24,23 +30,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        // Show the Up button in the action bar.
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -51,14 +40,23 @@ public class RecipeDetailActivity extends AppCompatActivity {
         //
         // http://developer.android.com/guide/components/fragments.html
         //
+
         if (savedInstanceState == null) {
+            // Extract intent extras.
+            Intent sendingIntent = getIntent();
+            String recipeJson = sendingIntent.getStringExtra(JsonUtils.RECIPE_JSON_EXTRA);
+            int recipePosition = sendingIntent.getIntExtra(JsonUtils.RECIPE_POSITION_EXTRA, JsonUtils.POSITION_DEFAULT);
+            int stepPosition = sendingIntent.getIntExtra(JsonUtils.STEP_POSITION_EXTRA, JsonUtils.POSITION_DEFAULT);
+            Recipe[] recipes = JsonUtils.parseRecipeList(recipeJson);
+            Recipe recipe = recipes[recipePosition];
+            Step recipeStep = recipe.getSteps().get(stepPosition);
+            setTitle(recipe.getName());
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(RecipeStepDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(RecipeStepDetailFragment.ARG_ITEM_ID));
+            // TODO: Pass the details of the recipe step to the fragment.
             RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
-            fragment.setArguments(arguments);
+            fragment.setRecipeStep(recipeStep);
+            fragment.setRecipeName(recipe.getName());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.recipe_detail_container, fragment)
                     .commit();
