@@ -18,6 +18,9 @@ import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
 import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * An activity representing a list of Recipes. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -28,6 +31,8 @@ import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
  */
 // TODO: Add ingredients to the UI.
 public class RecipeListActivity extends AppCompatActivity implements RecipeStepMasterListFragment.OnStepClickListener {
+
+
     private String mRecipeListJson;
     private int mRecipePosition;
     private Recipe[] mRecipes = new Recipe[0];
@@ -39,47 +44,47 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
      */
     private boolean mTwoPane;
 
+    private final String RECIPE_JSON_KEY = "recipe_json_key";
+    private final String RECIPE_POSITION_KEY = "recipe_position_key";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
+
         if (savedInstanceState == null) {
             // If there is no previously saved state, get intent extras to parse the desired recipe,
             // and create a master list fragment.
             Intent intent = getIntent();
             mRecipeListJson = intent.getStringExtra(JsonUtils.RECIPE_JSON_EXTRA);
             mRecipePosition = intent.getIntExtra(JsonUtils.RECIPE_POSITION_EXTRA, JsonUtils.POSITION_DEFAULT);
-            if (mRecipeListJson == null) {
-                Toast.makeText(this, "Could not load recipe.", Toast.LENGTH_LONG);
-                finish();
-            }
-            // Parse recipe json.
-            mRecipes = JsonUtils.parseRecipeList(mRecipeListJson);
-            mRecipe = mRecipes[mRecipePosition];
-
-            // Create fragment.
-            RecipeStepMasterListFragment masterFragment = new RecipeStepMasterListFragment();
-            masterFragment.setRecipe(mRecipe);
-
-            // Add the fragment to its container using a FragmentManager and a Transaction
-            FragmentManager fragmentManager = getSupportFragmentManager();
-
-            fragmentManager.beginTransaction()
-                    .add(R.id.recipe_steps_container, masterFragment)
-                    .commit();
-
-
+        } else {
+            mRecipeListJson = savedInstanceState.getString(RECIPE_JSON_KEY);
+            mRecipePosition = savedInstanceState.getInt(RECIPE_POSITION_KEY);
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
-
-
-        // Show the Up button in the action bar.
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        if (mRecipeListJson == null) {
+            Toast.makeText(this, "Could not load recipe.", Toast.LENGTH_LONG);
+            finish();
         }
+        // Parse recipe json.
+        mRecipes = JsonUtils.parseRecipeList(mRecipeListJson);
+        mRecipe = mRecipes[mRecipePosition];
+        setTitle(mRecipe.getName());
+
+        // Create fragment.
+        RecipeStepMasterListFragment masterFragment = new RecipeStepMasterListFragment();
+        masterFragment.setRecipe(mRecipe);
+
+        // Add the fragment to its container using a FragmentManager and a Transaction
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        fragmentManager.beginTransaction()
+                .add(R.id.recipe_steps_container, masterFragment)
+                .commit();
+
+
+
 
         if (findViewById(R.id.recipe_detail_container) != null) {
             // The detail container view will be present only in the
@@ -89,28 +94,7 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
             mTwoPane = true;
         }
 
-        /*
-        View recyclerView = findViewById(R.id.recipe_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
-        */
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpFromSameTask(this);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -130,4 +114,10 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(RECIPE_POSITION_KEY, mRecipePosition);
+        outState.putString(RECIPE_JSON_KEY, mRecipeListJson);
+        super.onSaveInstanceState(outState);
+    }
 }

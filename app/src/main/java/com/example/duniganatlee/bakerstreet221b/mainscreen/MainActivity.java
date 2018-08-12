@@ -18,8 +18,13 @@ import com.example.duniganatlee.bakerstreet221b.utils.NetworkUtils;
 import java.io.IOException;
 import java.net.URL;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
         implements RecipeCardAdapter.OnClickHandler {
+    // Bind views with ButterKnife.
+    @BindView(R.id.recipe_cards_rv) RecyclerView recipeCardRecyclerView;
     private String mRecipeListJson = null;
     public Recipe[] mRecipes = new Recipe[0];
     private RecyclerView.LayoutManager cardLayoutManager;
@@ -29,8 +34,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Set up Recycler View
-        RecyclerView recipeCardRecyclerView = (RecyclerView) findViewById(R.id.recipe_cards_rv);
+        ButterKnife.bind(this);
         cardLayoutManager = new LinearLayoutManager(this);
         recipeCardRecyclerView.setLayoutManager(cardLayoutManager);
         // Set adapter for the RecyclerView.

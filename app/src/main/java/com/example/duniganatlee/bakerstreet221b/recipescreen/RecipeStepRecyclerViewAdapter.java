@@ -9,15 +9,9 @@ import android.widget.TextView;
 import com.example.duniganatlee.bakerstreet221b.R;
 import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
-import com.example.duniganatlee.bakerstreet221b.recipescreen.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link RecipeStepMasterListFragment.OnStepClickListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class RecipeStepRecyclerViewAdapter extends RecyclerView.Adapter<RecipeStepRecyclerViewAdapter.ViewHolder> {
 
     private final List<Step> mRecipeSteps;

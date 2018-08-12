@@ -38,17 +38,8 @@ public class RecipeStepDetailFragment extends Fragment {
     @BindView(R.id.player_view) SimpleExoPlayerView mExoPlayerView;
     @BindView(R.id.text_description) TextView descriptionTextView;
 
+    // Member variables.
     private SimpleExoPlayer mExoPlayer;
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
-    public static final String ARG_ITEM_ID = "short_description";
-
-    // TODO: replace these hard values with passed arguments
-    /**
-     * The recipe this fragment is presenting.
-     */
     private Step mRecipeStep;
     private int id;
     private String mShortDescription;
@@ -67,11 +58,13 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater,container,savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
         ButterKnife.bind(this,rootView);
         // Populate the UI.
@@ -86,7 +79,6 @@ public class RecipeStepDetailFragment extends Fragment {
     }
 
     public void initializePlayer(Uri mediaUri) {
-        // TODO: Figure out how to stream the video from the http resource.
         Context context = getContext();
         if (mExoPlayer == null) {
             TrackSelector trackSelector = new DefaultTrackSelector();

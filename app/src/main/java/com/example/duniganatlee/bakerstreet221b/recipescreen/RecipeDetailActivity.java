@@ -53,7 +53,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
             setTitle(recipe.getName());
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            // TODO: Pass the details of the recipe step to the fragment.
             RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
             fragment.setRecipeStep(recipeStep);
             fragment.setRecipeName(recipe.getName());
@@ -61,21 +60,5 @@ public class RecipeDetailActivity extends AppCompatActivity {
                     .add(R.id.recipe_detail_container, fragment)
                     .commit();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            navigateUpTo(new Intent(this, RecipeListActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

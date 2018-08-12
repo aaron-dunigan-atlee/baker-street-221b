@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.example.duniganatlee.bakerstreet221b.R;
 import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
-import com.example.duniganatlee.bakerstreet221b.recipescreen.dummy.DummyContent;
 
 /**
  * A fragment representing a list of Recipe Step short descriptions.
@@ -34,12 +33,15 @@ public class RecipeStepMasterListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Allow instance to be retained in order to save state on orientation change.
+        setRetainInstance(true);
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater,container,savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_step_list, container, false);
         // Get the steps for the recipe.
         // savedInstanceState.getString()
@@ -48,6 +50,10 @@ public class RecipeStepMasterListFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            /*if (savedInstanceState != null) {
+                mRecipe = savedInstanceState.;
+
+            }*/
             recyclerView.setAdapter(new RecipeStepRecyclerViewAdapter(mRecipe, mListener));
         }
         return view;
