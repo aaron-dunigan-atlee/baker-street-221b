@@ -6,10 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.duniganatlee.bakerstreet221b.R;
@@ -18,11 +14,8 @@ import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
 import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
- * An activity representing a list of Recipes. This activity
+ * An activity representing a list of Recipe Steps. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
  * lead to a {@link RecipeDetailActivity} representing
@@ -31,7 +24,6 @@ import butterknife.ButterKnife;
  */
 // TODO: Add ingredients to the UI.
 public class RecipeListActivity extends AppCompatActivity implements RecipeStepMasterListFragment.OnStepClickListener {
-
 
     private String mRecipeListJson;
     private int mRecipePosition;
@@ -54,12 +46,13 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
         setContentView(R.layout.activity_recipe_list);
 
         if (savedInstanceState == null) {
-            // If there is no previously saved state, get intent extras to parse the desired recipe,
-            // and create a master list fragment.
+            // If there is no previously saved state, get the whole json and the id for the
+            // desired recipe from the intent extras.
             Intent intent = getIntent();
             mRecipeListJson = intent.getStringExtra(JsonUtils.RECIPE_JSON_EXTRA);
             mRecipePosition = intent.getIntExtra(JsonUtils.RECIPE_POSITION_EXTRA, JsonUtils.POSITION_DEFAULT);
         } else {
+            // Otherwise, get the info from the saved instance state.
             mRecipeListJson = savedInstanceState.getString(RECIPE_JSON_KEY);
             mRecipePosition = savedInstanceState.getInt(RECIPE_POSITION_KEY);
         }
@@ -82,9 +75,6 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
         fragmentManager.beginTransaction()
                 .add(R.id.recipe_steps_container, masterFragment)
                 .commit();
-
-
-
 
         if (findViewById(R.id.recipe_detail_container) != null) {
             // The detail container view will be present only in the

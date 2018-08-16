@@ -35,6 +35,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.duniganatlee.bakerstreet221b.recipescreen.RecipeListActivity" />
         </activity>
+
+        <receiver android:name=".widget.IngredientsWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/ingredients_widget_provider_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.IngredientsListWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
     </application>
 
 </manifest>

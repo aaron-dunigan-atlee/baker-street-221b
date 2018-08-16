@@ -1,7 +1,11 @@
 package com.example.duniganatlee.bakerstreet221b.mainscreen;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +18,8 @@ import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.recipescreen.RecipeListActivity;
 import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
 import com.example.duniganatlee.bakerstreet221b.utils.NetworkUtils;
+import com.example.duniganatlee.bakerstreet221b.utils.PreferenceUtils;
+import com.example.duniganatlee.bakerstreet221b.widget.IngredientsWidgetProvider;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,6 +39,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("Package name", getPackageName());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         cardLayoutManager = new LinearLayoutManager(this);
@@ -61,11 +68,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClicked(int position) {
+        PreferenceUtils.setPreferenceCurrentRecipeId(this, position);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, IngredientsWidgetProvider.class));
+        //Trigger data update to handle the GridView widgets and force a data refresh
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_ingredients);
         Intent launchRecipeListIntent = new Intent(this, RecipeListActivity.class);
         launchRecipeListIntent.putExtra(JsonUtils.RECIPE_JSON_EXTRA, mRecipeListJson);
         launchRecipeListIntent.putExtra(JsonUtils.RECIPE_POSITION_EXTRA, position);
         startActivity(launchRecipeListIntent);
-
     }
 
     public class RecipeQueryTask extends AsyncTask<URL, Void, String> {
@@ -85,6 +96,8 @@ public class MainActivity extends AppCompatActivity
             super.onPostExecute(queryResult);
             mRecipeListJson = queryResult;
             populateRecipeCards();
+            PreferenceUtils.setPreferenceRecipeJson(getApplicationContext(),queryResult);
+
         }
     }
 
