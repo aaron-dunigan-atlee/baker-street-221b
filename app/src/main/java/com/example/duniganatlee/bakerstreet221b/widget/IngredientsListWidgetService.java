@@ -25,6 +25,8 @@ public class IngredientsListWidgetService extends RemoteViewsService {
 class IngredientsListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context mContext;
     List<Ingredient> mIngredients;
+    private String recipeListJson;
+    private int currentRecipeId;
 
     public IngredientsListRemoteViewsFactory(Context applicationContext) {
         mContext = applicationContext;
@@ -37,11 +39,13 @@ class IngredientsListRemoteViewsFactory implements RemoteViewsService.RemoteView
     // Called on start and when notifyAppWidgetViewDataChanged is called.
     @Override
     public void onDataSetChanged() {
-        String recipeListJson = PreferenceUtils.getPreferenceRecipeJson(mContext);
-        int currentRecipeId = PreferenceUtils.getPreferenceCurrentRecipeId(mContext);
+        recipeListJson = PreferenceUtils.getPreferenceRecipeJson(mContext);
+        currentRecipeId = PreferenceUtils.getPreferenceCurrentRecipeId(mContext);
         if (recipeListJson != null && currentRecipeId != PreferenceUtils.NO_RECIPE_SELECTED) {
             Recipe recipe = JsonUtils.parseRecipeList(recipeListJson)[currentRecipeId];
             mIngredients = recipe.getIngredients();
+        } else {
+            mIngredients = null;
         }
     }
 
@@ -64,6 +68,15 @@ class IngredientsListRemoteViewsFactory implements RemoteViewsService.RemoteView
         String ingredientText = ingredient.getQuantity() + " " + ingredient.getMeasure() + " " + ingredient.getIngredient();
         RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.ingredients_widget_list_item);
         views.setTextViewText(R.id.widget_text_ingredient_item, ingredientText);
+
+        // Set onclick intent using a fillInIntent which interprets the PendingIntentTemplate
+        // which was set in IngredientsWidgetProvider's onCreate().
+        // Since all ingredients have same click behavior, no need to fill in the intent template.
+        Intent fillInIntent = new Intent();
+        fillInIntent.putExtra(JsonUtils.RECIPE_POSITION_EXTRA, currentRecipeId);
+        fillInIntent.putExtra(JsonUtils.RECIPE_JSON_EXTRA, recipeListJson);
+        views.setOnClickFillInIntent(R.id.widget_text_ingredient_item, fillInIntent);
+
         return views;
     }
 

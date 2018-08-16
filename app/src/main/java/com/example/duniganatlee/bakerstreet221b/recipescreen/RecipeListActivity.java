@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.duniganatlee.bakerstreet221b.R;
@@ -13,6 +14,7 @@ import com.example.duniganatlee.bakerstreet221b.R;
 import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
 import com.example.duniganatlee.bakerstreet221b.utils.JsonUtils;
+import com.example.duniganatlee.bakerstreet221b.utils.PreferenceUtils;
 
 /**
  * An activity representing a list of Recipe Steps. This activity
@@ -38,7 +40,7 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
 
     private final String RECIPE_JSON_KEY = "recipe_json_key";
     private final String RECIPE_POSITION_KEY = "recipe_position_key";
-
+    private final static String LOG_TAG = "RecipeListActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +49,21 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
 
         if (savedInstanceState == null) {
             // If there is no previously saved state, get the whole json and the id for the
-            // desired recipe from the intent extras.
-            Intent intent = getIntent();
-            mRecipeListJson = intent.getStringExtra(JsonUtils.RECIPE_JSON_EXTRA);
-            mRecipePosition = intent.getIntExtra(JsonUtils.RECIPE_POSITION_EXTRA, JsonUtils.POSITION_DEFAULT);
+            // desired recipe from the preferences.
+            mRecipeListJson = PreferenceUtils.getPreferenceRecipeJson(this);
+            mRecipePosition = PreferenceUtils.getPreferenceCurrentRecipeId(this);
+            Log.d(LOG_TAG, "Getting preferences.");
         } else {
             // Otherwise, get the info from the saved instance state.
             mRecipeListJson = savedInstanceState.getString(RECIPE_JSON_KEY);
             mRecipePosition = savedInstanceState.getInt(RECIPE_POSITION_KEY);
+            Log.d(LOG_TAG, "Getting savedInstanceState.");
         }
-        if (mRecipeListJson == null) {
-            Toast.makeText(this, "Could not load recipe.", Toast.LENGTH_LONG);
+        if (mRecipeListJson == null || mRecipePosition == PreferenceUtils.NO_RECIPE_SELECTED) {
+            Log.d(LOG_TAG, "No recipe.  Failing...");
+            Toast.makeText(this, "Could not load recipe.", Toast.LENGTH_LONG).show();
             finish();
+            return;
         }
         // Parse recipe json.
         mRecipes = JsonUtils.parseRecipeList(mRecipeListJson);

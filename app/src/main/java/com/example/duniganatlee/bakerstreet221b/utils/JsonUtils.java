@@ -12,7 +12,7 @@ public class JsonUtils {
     public static final String RECIPE_POSITION_EXTRA = "recipe_id_extra";
     public static final String RECIPE_JSON_EXTRA = "recipe_json_extra";
     public static final String STEP_POSITION_EXTRA = "step_id_extra";
-    public final static int POSITION_DEFAULT = -1;
+    public final static int POSITION_DEFAULT = PreferenceUtils.NO_RECIPE_SELECTED;
 
     /*
     Given the JSON recipe list, extract each individual recipe, assign it to a Recipe object,

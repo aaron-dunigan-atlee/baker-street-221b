@@ -110,4 +110,16 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, "Could not load recipes", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // When user returns to main screen (via up or back, or by opening app), set current recipe
+        // to "no recipe" and notify widget so that ingredients are no longer displayed.
+        PreferenceUtils.setPreferenceCurrentRecipeId(this, PreferenceUtils.NO_RECIPE_SELECTED);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, IngredientsWidgetProvider.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_ingredients);
+
+    }
 }

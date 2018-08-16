@@ -40,19 +40,20 @@ public class IngredientsWidgetProvider extends AppWidgetProvider {
         mRecipeListJson = PreferenceUtils.getPreferenceRecipeJson(context);
         mCurrentRecipeId = PreferenceUtils.getPreferenceCurrentRecipeId(context);
         Log.d("Current recipe",Integer.toString(mCurrentRecipeId));
-/*
-        // Pending intent to open the main app's RecipeListActivity.
+
+        // Pending intent to open the app's RecipeListActivity for the given recipe.
+        // In this case, no need to differentiate which ingredient was clicked.
         Intent onClickIntent = new Intent(context, RecipeListActivity.class);
-        onClickIntent.putExtra(JsonUtils.RECIPE_JSON_EXTRA, mRecipeListJson);
-        onClickIntent.putExtra(JsonUtils.RECIPE_POSITION_EXTRA, mCurrentRecipeId);
+        //onClickIntent.putExtra(JsonUtils.RECIPE_JSON_EXTRA, mRecipeListJson);
+        //onClickIntent.putExtra(JsonUtils.RECIPE_POSITION_EXTRA, mCurrentRecipeId);
         PendingIntent recipePendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, 0);
-        views.setOnClickPendingIntent(R.id.widget_list_ingredients, recipePendingIntent);
-*/
-/*
+        views.setPendingIntentTemplate(R.id.widget_list_ingredients, recipePendingIntent);
+
+        // If no recipe is selected, open main activity when user clicks the EmptyView text view.
         Intent noRecipeIntent = new Intent(context, MainActivity.class);
         PendingIntent noRecipePendingIntent = PendingIntent.getActivity(context, 0, noRecipeIntent, 0);
         views.setOnClickPendingIntent(R.id.widget_text_no_recipe, noRecipePendingIntent);
-*/
+
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
