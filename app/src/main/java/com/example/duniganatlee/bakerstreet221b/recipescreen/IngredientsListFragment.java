@@ -14,19 +14,17 @@ import com.example.duniganatlee.bakerstreet221b.model.Recipe;
 import com.example.duniganatlee.bakerstreet221b.model.Step;
 
 /**
- * A fragment representing a list of Recipe Step short descriptions.
- * Activities containing this fragment MUST implement the {@link OnStepClickListener}
- * interface.
+ * A fragment representing a list of Recipe Ingredients.
  */
-public class RecipeStepMasterListFragment extends Fragment {
-    private OnStepClickListener mListener;
+public class IngredientsListFragment extends Fragment {
+
     private Recipe mRecipe;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public RecipeStepMasterListFragment() {
+    public IngredientsListFragment() {
     }
 
 
@@ -42,44 +40,16 @@ public class RecipeStepMasterListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater,container,savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_step_list, container, false);
-        // Get the steps for the recipe.
-        // savedInstanceState.getString()
+        View view = inflater.inflate(R.layout.fragment_ingredient_list, container, false);
+
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-            recyclerView.setAdapter(new RecipeStepRecyclerViewAdapter(mRecipe, mListener));
+            recyclerView.setAdapter(new IngredientRecyclerViewAdapter(mRecipe));
         }
         return view;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnStepClickListener) {
-            mListener = (OnStepClickListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnStepClickListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface allows this fragment to communicate back to the container activity.
-     * The container activity must implement the interface.
-     **/
-    public interface OnStepClickListener {
-        void onStepSelected(Step recipeStep);
     }
 
     public void setRecipe(Recipe recipe) {

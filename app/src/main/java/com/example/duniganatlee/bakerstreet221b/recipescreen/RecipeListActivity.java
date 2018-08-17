@@ -24,7 +24,6 @@ import com.example.duniganatlee.bakerstreet221b.utils.PreferenceUtils;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-// TODO: Add ingredients to the UI.
 public class RecipeListActivity extends AppCompatActivity implements RecipeStepMasterListFragment.OnStepClickListener {
 
     private String mRecipeListJson;
@@ -70,15 +69,19 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
         mRecipe = mRecipes[mRecipePosition];
         setTitle(mRecipe.getName());
 
-        // Create fragment.
+        // Create ingredients fragment.
+        IngredientsListFragment ingredientsFragment = new IngredientsListFragment();
+        ingredientsFragment.setRecipe(mRecipe);
+
+        // Create recipe steps fragment.
         RecipeStepMasterListFragment masterFragment = new RecipeStepMasterListFragment();
         masterFragment.setRecipe(mRecipe);
 
         // Add the fragment to its container using a FragmentManager and a Transaction
         FragmentManager fragmentManager = getSupportFragmentManager();
-
         fragmentManager.beginTransaction()
                 .add(R.id.recipe_steps_container, masterFragment)
+                .add(R.id.ingredients_container, ingredientsFragment)
                 .commit();
 
         if (findViewById(R.id.recipe_detail_container) != null) {

@@ -34,9 +34,6 @@ public class IngredientsWidgetProvider extends AppWidgetProvider {
         // Handle case when no ingredients found
         views.setEmptyView(R.id.widget_list_ingredients, R.id.widget_text_no_recipe);
 
-        // Find out if user has already selected a recipe.  If so, clicking will open that recipe's
-        // RecipeListActivity.
-        // If not, clicking the widget will open the MainActivity.
         mRecipeListJson = PreferenceUtils.getPreferenceRecipeJson(context);
         mCurrentRecipeId = PreferenceUtils.getPreferenceCurrentRecipeId(context);
         Log.d("Current recipe",Integer.toString(mCurrentRecipeId));
@@ -44,8 +41,6 @@ public class IngredientsWidgetProvider extends AppWidgetProvider {
         // Pending intent to open the app's RecipeListActivity for the given recipe.
         // In this case, no need to differentiate which ingredient was clicked.
         Intent onClickIntent = new Intent(context, RecipeListActivity.class);
-        //onClickIntent.putExtra(JsonUtils.RECIPE_JSON_EXTRA, mRecipeListJson);
-        //onClickIntent.putExtra(JsonUtils.RECIPE_POSITION_EXTRA, mCurrentRecipeId);
         PendingIntent recipePendingIntent = PendingIntent.getActivity(context, 0, onClickIntent, 0);
         views.setPendingIntentTemplate(R.id.widget_list_ingredients, recipePendingIntent);
 

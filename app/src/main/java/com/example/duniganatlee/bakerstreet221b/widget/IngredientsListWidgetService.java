@@ -65,9 +65,8 @@ class IngredientsListRemoteViewsFactory implements RemoteViewsService.RemoteView
     public RemoteViews getViewAt(int position) {
         if (mIngredients == null || mIngredients.size() == 0) return null;
         Ingredient ingredient = mIngredients.get(position);
-        String ingredientText = ingredient.getQuantity() + " " + ingredient.getMeasure() + " " + ingredient.getIngredient();
         RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.ingredients_widget_list_item);
-        views.setTextViewText(R.id.widget_text_ingredient_item, ingredientText);
+        views.setTextViewText(R.id.widget_text_ingredient_item, ingredient.getFullDescription());
 
         // Set onclick intent using a fillInIntent which interprets the PendingIntentTemplate
         // which was set in IngredientsWidgetProvider's onCreate().
