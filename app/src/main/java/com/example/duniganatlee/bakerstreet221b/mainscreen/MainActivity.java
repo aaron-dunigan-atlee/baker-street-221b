@@ -3,14 +3,11 @@ package com.example.duniganatlee.bakerstreet221b.mainscreen;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.duniganatlee.bakerstreet221b.R;
@@ -29,17 +26,19 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
         implements RecipeCardAdapter.OnClickHandler {
+
     // Bind views with ButterKnife.
     @BindView(R.id.recipe_cards_rv) RecyclerView recipeCardRecyclerView;
     private String mRecipeListJson = null;
     public Recipe[] mRecipes = new Recipe[0];
     private RecyclerView.LayoutManager cardLayoutManager;
     private RecipeCardAdapter mRecipeCardAdapter;
+    private final String NO_NETWORK_WARNING = getString(R.string.no_network_message);
+    private final String NO_RECIPES_WARNING = getString(R.string.no_recipes_message);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("Package name", getPackageName());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         cardLayoutManager = new LinearLayoutManager(this);
@@ -61,8 +60,7 @@ public class MainActivity extends AppCompatActivity
             RecipeQueryTask queryTask = new RecipeQueryTask();
             queryTask.execute(recipeUrl);
         } else {
-
-            Toast.makeText(this, "No network connection", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, NO_NETWORK_WARNING, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -106,8 +104,7 @@ public class MainActivity extends AppCompatActivity
             mRecipes = JsonUtils.parseRecipeList(mRecipeListJson);
             mRecipeCardAdapter.setRecipeTitles(mRecipes);
         } else {
-
-            Toast.makeText(this, "Could not load recipes", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, NO_RECIPES_WARNING, Toast.LENGTH_LONG).show();
         }
     }
 
