@@ -32,6 +32,10 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:r2.2.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
+    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.2'
+    // No need to include support-annotations because appcompat library (above) depends on it.
+    // espresso-contrib includes tools for testing RecyclerView
+    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
 }
