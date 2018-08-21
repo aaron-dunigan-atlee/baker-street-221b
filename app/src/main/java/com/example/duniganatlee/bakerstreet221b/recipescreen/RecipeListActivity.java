@@ -86,10 +86,19 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
 
         if (findViewById(R.id.recipe_detail_container) != null) {
             // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
+            // large-screen layouts (res/values-w600dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
             mTwoPane = true;
+            // Therefore, set up the recipe detail fragment if this is a new instance:
+            if (savedInstanceState == null) {
+                RecipeStepDetailFragment recipeStepDetailFragment = new RecipeStepDetailFragment();
+                recipeStepDetailFragment.setRecipeStep(mRecipe.getSteps().get(0));
+                recipeStepDetailFragment.setRecipeName(mRecipe.getName());
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.recipe_detail_container, recipeStepDetailFragment)
+                        .commit();
+            }
         }
 
 
@@ -102,8 +111,15 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeStepM
     @Override
     public void onStepSelected(Step recipeStep) {
         if (mTwoPane) {
-
+            // We've got a wide screen, so replace the detail fragment:
+            RecipeStepDetailFragment recipeStepDetailFragment = new RecipeStepDetailFragment();
+            recipeStepDetailFragment.setRecipeStep(recipeStep);
+            recipeStepDetailFragment.setRecipeName(mRecipe.getName());
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.recipe_detail_container, recipeStepDetailFragment)
+                    .commit();
         } else {
+            // We've got a narrow screen, so launch an intent:
             Intent intent = new Intent(this, RecipeDetailActivity.class);
             intent.putExtra(JsonUtils.RECIPE_JSON_EXTRA,mRecipeListJson);
             intent.putExtra(JsonUtils.RECIPE_POSITION_EXTRA, mRecipePosition);
