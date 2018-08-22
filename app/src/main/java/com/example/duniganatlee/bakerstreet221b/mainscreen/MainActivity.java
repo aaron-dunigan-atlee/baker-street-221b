@@ -33,11 +33,13 @@ public class MainActivity extends AppCompatActivity
     public Recipe[] mRecipes = new Recipe[0];
     private RecyclerView.LayoutManager cardLayoutManager;
     private RecipeCardAdapter mRecipeCardAdapter;
-    private final String NO_NETWORK_WARNING = getString(R.string.no_network_message);
-    private final String NO_RECIPES_WARNING = getString(R.string.no_recipes_message);
+    private String NO_NETWORK_WARNING;
+    private String NO_RECIPES_WARNING;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        NO_NETWORK_WARNING = getString(R.string.no_network_message);
+        NO_RECIPES_WARNING = getString(R.string.no_recipes_message);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity
             RecipeQueryTask queryTask = new RecipeQueryTask();
             queryTask.execute(recipeUrl);
         } else {
-            Toast.makeText(this, NO_NETWORK_WARNING, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, NO_NETWORK_WARNING, Toast.LENGTH_LONG).show();
         }
     }
 
