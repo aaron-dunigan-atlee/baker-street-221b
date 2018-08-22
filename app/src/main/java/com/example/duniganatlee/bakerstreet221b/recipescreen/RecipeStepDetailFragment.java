@@ -3,6 +3,7 @@ package com.example.duniganatlee.bakerstreet221b.recipescreen;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,12 @@ public class RecipeStepDetailFragment extends Fragment {
     private String mVideoURL;
     private String mThumbnailURL;
     private String mRecipeName;
+    private long exoPlayerPlaybackPosition = 0;
+    private int exoPlayerWindowIndex = 0;
+    private boolean exoPlayerAutoPlay = true;
+    private static final String PLAYBACK_POSITION = "playback_position";
+    private static final String WINDOW_INDEX = "window_index";
+    private static final String AUTOPLAY = "autoplay";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -62,19 +69,29 @@ public class RecipeStepDetailFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        initializePlayer(Uri.parse(mVideoURL));
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater,container,savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
         ButterKnife.bind(this,rootView);
-        // Populate the UI.
 
-        // TODO: Include all the recipe step details.
         mDescription = mRecipeStep.getDescription();
         descriptionTextView.setText(mDescription);
+
         // Initialize the media player.
+
         mVideoURL = mRecipeStep.getVideoURL();
-        initializePlayer(Uri.parse(mVideoURL));
+        if (savedInstanceState != null) {
+            exoPlayerAutoPlay = savedInstanceState.getBoolean(AUTOPLAY, false);
+            exoPlayerWindowIndex = savedInstanceState.getInt(WINDOW_INDEX, 0);
+            exoPlayerPlaybackPosition = savedInstanceState.getLong(PLAYBACK_POSITION, 0);
+        }
         return rootView;
     }
 
@@ -94,20 +111,41 @@ public class RecipeStepDetailFragment extends Fragment {
                     null,
                     null);
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
+            mExoPlayer.setPlayWhenReady(exoPlayerAutoPlay);
+            mExoPlayer.seekTo(exoPlayerWindowIndex, exoPlayerPlaybackPosition);
         }
+
     }
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
         releasePlayer();
     }
 
     // Release ExoPlayer
     private void releasePlayer() {
+        // Get current state of player before releasing, in case we need to
+        // restore the player state/position later (e.g. on screen rotation).
+        exoPlayerPlaybackPosition = mExoPlayer.getCurrentPosition();
+        exoPlayerWindowIndex = mExoPlayer.getCurrentWindowIndex();
+        // getPlayWhenReady() will be true if player is currently playing; false otherwise.
+        // Therefore, this tells us whether to continue playing when the activity resumes, or just
+        // queue up the track in paused state.
+        // See https://github.com/google/ExoPlayer/issues/3570
+        exoPlayerAutoPlay = mExoPlayer.getPlayWhenReady();
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;
+    }
+
+    // Help for saving and restoring player state came from
+    // https://gist.github.com/codeshifu/c26bb8a5f27f94d73b3a4888a509927c
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(WINDOW_INDEX,exoPlayerWindowIndex);
+        outState.putLong(PLAYBACK_POSITION, exoPlayerPlaybackPosition);
+        outState.putBoolean(AUTOPLAY, exoPlayerAutoPlay);
     }
 
     public void setRecipeStep(Step recipeStep) {
